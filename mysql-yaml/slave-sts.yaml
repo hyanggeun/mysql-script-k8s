@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-slave
+spec:
+  serviceName: mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - name: init
+        image: mysql/mysql-server:5.7.31
+        ports:
+        - containerPort: 3306
+          name: mysqld
+        command: ["bash", "-c", "rm -rf ${VOLUME_DIR}/* && mkdir -p ${VOLUME_DIR}/data && mkdir -p ${VOLUME_DIR}/tmp && mkdir -p ${VOLUME_DIR}/logs && chown -R mysql:mysql ${VOLUME_DIR}"]
+        env:
+        - name: VOLUME_DIR
+          value: "/mysql-slave/persistent"
+        volumeMounts:
+        - name: datadir
+          mountPath: /mysql-slave/persistent
+      containers:
+      - name: mysql
+        image: mysql/mysql-server:5.7.31
+        ports:
+        - containerPort: 3306
+          name: mysqld
+        volumeMounts:
+        - name: etc-mysql
+          mountPath: /etc/mysql
+          readOnly: true
+        - name: datadir
+          mountPath: /mysql-slave/persistent
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "slave"
+      volumes:
+      - name: etc-mysql
+        configMap:
+          name: mycnf-slave
+          items:
+          - key: my2.cnf
+            path: my.cnf
+      - name: datadir
+        hostPath:
+          path: /mysql-slave/persistent
+          type: DirectoryOrCreate

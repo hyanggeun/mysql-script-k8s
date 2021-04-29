@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mycnf-master
+data:
+  my2.cnf: |
+    [mysqld]
+    server-id = 1
+    log_bin = /mysql-master/persistent/logs/binary_log
+    tmpdir = /mysql-master/persistent/tmp
+    datadir = /mysql-master/persistent/data
+    sync_binlog = 1
+    enforce_gtid_consistency = ON
+    gtid_mode = ON
+    binlog_format = ROW
+    binlog_error_action = ABORT_SERVER
+    slow_query_log
+    slow_query_log_file = /mysql-master/persistent/logs/slow_query.log
+    general_log_file = /mysql-master/persistent/logs/general.log
+    log_error = /mysql-master/persistent/logs/error.log

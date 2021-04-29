@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mycnf-slave
+data:
+  my2.cnf: |
+    [mysqld]
+    server-id = 2
+    relay-log = relay_log
+    read_only
+    tmpdir = /mysql-slave/persistent/tmp
+    datadir = /mysql-slave/persistent/data
+    relay_log = /mysql-slave/persistent/logs/relay_log
+    relay_log_purge = ON
+    gtid_mode = ON
+    enforce_gtid_consistency = ON
+    sync_binlog = 1
+    binlog_error_action = ABORT_SERVER
+    general_log_file = /mysql-slave/persistent/logs/general.log
+    log_error = /mysql-slave/persistent/logs/error.log
