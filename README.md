@@ -4,7 +4,7 @@
 * mysql Version: ```5.7.31```
 ### 디렉토리 구조
 
-    mysql
+    mysql-yaml
     ㄴ master-cm.yaml
     ㄴ master-sts.yaml
     ㄴ service.yaml
